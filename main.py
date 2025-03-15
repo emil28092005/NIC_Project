@@ -4,63 +4,72 @@ from gameobjects import *
 
 pygame.init()
 
-WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("NIC_Project")
+screen = pygame.display.set_mode((WIDTH, HEIGHT))  # Initialize the screen
+pygame.display.set_caption("NIC_Project")  # Set window title
 
-WHITE = (255, 255, 255)
+WHITE = (255, 255, 255)  # Define white color
 
-UI = UI()
-grass = Background("images/grass.jpg", 0, 0)
-horse1 = Horse("images/horse.png", 50, 50)
-barrier1 = Barrier("images/barrier.png", 400, 300)
+UI = UI()  # Initialize UI
+grass = Background("images/grass.jpg", 0, 0)  # Create background
+horse1 = Horse("images/horse.png", 50, 50)  # Create a horse
+barrier1 = Barrier("images/barrier.png", 400, 300)  # Create a barrier
 
-BARRIER_SPEED = 1
+BARRIER_SPEED = 1  # Speed of the barriers
 
-grass.set_size(WIDTH, HEIGHT)
+grass.set_size(WIDTH, HEIGHT)  # Set background size
 
-gameobjects = [grass, horse1, barrier1]
-horses = [Horse("images/horse.png", 50, 50) for i in range(5)]
-barriers = [barrier1]
+gameobjects = []  # List of all game objects
+horses = [Horse("images/horse.png", 50, 50 * i) for i in range(50)]  # Create 50 horses
+barriers = [barrier1]  # List of barriers
 
-UI.add_children(horses)
+gameobjects.extend([grass])  # Add background to game objects
+gameobjects.extend(horses)  # Add horses to game objects
+gameobjects.extend(barriers)  # Add barriers to game objects
+
+spawner = Spawner("images/barrier.png")  # Initialize spawner
+
+UI.add_children(horses)  # Add horses to UI
 while True:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT:  # Handle window close event
             pygame.quit()
             sys.exit()
 
-    keys = pygame.key.get_pressed()
+    keys = pygame.key.get_pressed()  # Get pressed keys
     
     for horse in horses:
-        if horse.stopped == False:
-            if keys[pygame.K_UP]:    
+        if horse.stopped == False:  # If the horse is not stopped
+            if keys[pygame.K_UP]:  # Move horse up if UP key is pressed
                 horse.up()           
-            elif keys[pygame.K_DOWN]:
+            elif keys[pygame.K_DOWN]:  # Move horse down if DOWN key is pressed
                 horse.down()         
             else:
-                horse.stay()    
+                horse.stay()  # Stop vertical movement if no key is pressed
         else:
-            horse.move(-BARRIER_SPEED, 0)    
+            horse.move(-BARRIER_SPEED, 0)  # Move stopped horse to the left
 
-        horse.apply_vacceleration()
-        horse.apply_vspeed()         
-        horse.draw(screen)           
+        horse.apply_vacceleration()  # Apply acceleration to horse
+        horse.apply_vspeed()  # Apply speed to horse
+        horse.draw(screen)  # Draw the horse
+
+    spawner.handle()  # Handle spawner logic
+    if spawner.tick_counter == 0:  # If a new barrier is spawned
+        new_barrier = spawner.spawn()  # Spawn a new barrier
+        barriers.append(new_barrier)  # Add barrier to barriers list
+        gameobjects.append(new_barrier)  # Add barrier to game objects
 
     for barrier in barriers:
-        barrier.move(-BARRIER_SPEED, 0)
+        barrier.move(-BARRIER_SPEED, 0)  # Move barriers to the left
 
-    # Checking collisions between horses and barriers
     for horse in horses:
-        if horse.stopped == False:
+        if horse.stopped == False:  # Check for collisions between horses and barriers
             for barrier in barriers:
-                if horse.rect.colliderect(barrier.rect):
-                    horse.stop()
-                
+                if horse.rect.colliderect(barrier.rect):  # If collision detected
+                    horse.stop()  # Stop the horse
 
     for object in gameobjects:
-        object.draw(screen)
-    UI.draw_marks(screen)
+        object.draw(screen)  # Draw all game objects
+    UI.draw_marks(screen)  # Draw UI marks
 
-    pygame.display.flip()
-    pygame.time.Clock().tick(60)
+    pygame.display.flip()  # Update the display
+    pygame.time.Clock().tick(160)  # Limit the frame rate to 160 FPS
