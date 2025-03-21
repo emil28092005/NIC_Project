@@ -55,6 +55,13 @@ class Horse(GameObject):
     ribbon_out = None
     def __init__(self, image_path, x, y):
         super().__init__(image_path, x, y)
+        self.images = []
+        self.images.append(pygame.image.load("images/Horse_1.png"))
+        self.images.append(pygame.image.load("images/Horse_2.png"))
+        self.images.append(pygame.image.load("images/Horse_3.png"))
+        self.animation_speed = 25
+        self.frame_counter = 0
+        self.current_frame = 0
         self.vspeed = 0
         self.vacceleration = 0
         self.stopped = False
@@ -89,6 +96,12 @@ class Horse(GameObject):
     def draw(self, surface):
         super().draw(surface)  # Draw the horse
         #pygame.draw.rect(surface, self.color, (self.x + 40, self.y + 20, 25, 25))  # Draw the horse's mark
+    def update_animation(self):
+        self.frame_counter += 1
+        if self.frame_counter >= self.animation_speed:
+            self.frame_counter = 0
+            self.current_frame = (self.current_frame + 1) % len(self.images)
+            self.image = self.images[self.current_frame]
 
 class Background(GameObject):
     def __init__(self, image_path, x, y):

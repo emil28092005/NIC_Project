@@ -62,6 +62,7 @@ while True:
         barrier.move(-BARRIER_SPEED, 0)  # Move barriers to the left
 
     for horse in horses:
+        horse.update_animation()
         if horse.stopped == False:  # Check for collisions between horses and barriers
             for barrier in barriers:
                 if horse.rect.colliderect(barrier.rect):  # If collision detected
