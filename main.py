@@ -28,7 +28,7 @@ gameobjects.extend(barriers)  # Add barriers to game objects
 
 spawner = Spawner("images/Barrier.png")  # Initialize spawner
 
-UI.add_children(horses)  # Add horses to UI
+UI.add_horses(horses)  # Add horses to UI
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:  # Handle window close event

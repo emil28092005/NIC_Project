@@ -59,12 +59,12 @@ class Horse(GameObject):
         self.vacceleration = 0
         self.stopped = False
         self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))  # Random color for the mark
-        self.ribbon_fill = GameObject("images/Ribbon_fill.png", self.x, self.y, (-13, -26))
+        self.ribbon_fill = GameObject("images/Ribbon_fill.png", self.x, self.y, (16, -1))
         self.ribbon_fill.recolor(self.color)
-        self.ribbon_out = GameObject("images/Ribbon_out.png", self.x, self.y, (-13, -26))
+        self.ribbon_out = GameObject("images/Ribbon_out.png", self.x, self.y, (14, -2))
         self.set_children(self.ribbon_fill)
         self.set_children(self.ribbon_out)
-        self.set_size(75, 75)  # Set the size of the horse
+        # self.set_size(75, 75)  # Set the size of the horse
     def apply_vspeed(self):
         pos = self.get_position()
         self.set_position(pos[0], pos[1] + self.vspeed)  # Apply vertical speed to position
@@ -97,26 +97,27 @@ class Background(GameObject):
 class Barrier(GameObject):
     def __init__(self, image_path, x, y):
         super().__init__(image_path, x, y)  # Initialize barrier
+        self.scale_by(5)
 
 class UI:
-    children = []  # List of child objects
+    horses = []  # List of child objects
     horizontal_offset = 25  # Horizontal spacing between marks
     vertical_offset = -25  # Vertical spacing between marks
     mark_size = 25  # Size of the marks
     def __init__(self):
-        self.children = []  # Initialize children list
-    def add_children(self, children):
-        new_children = [child for child in children if child not in self.children]  # Add new children
-        self.children.extend(new_children)
+        self.horses = []  # Initialize children list
+    def add_horses(self, children):
+        new_horses = [child for child in children if child not in self.horses]  # Add new children
+        self.horses.extend(new_horses)
     def draw_marks(self, screen):
         active_marks = []  # List of active horses
         unactive_marks = []  # List of inactive horses
-        for i in range(len(self.children)):
-            if isinstance(self.children[i], Horse):
-                if (self.children[i].stopped == False):
-                    active_marks.append(self.children[i])  # Add active horses
+        for i in range(len(self.horses)):
+            if isinstance(self.horses[i], Horse):
+                if (self.horses[i].stopped == False):
+                    active_marks.append(self.horses[i])  # Add active horses
                 else:
-                    unactive_marks.append(self.children[i])  # Add inactive horses
+                    unactive_marks.append(self.horses[i])  # Add inactive horses
 
         width = 10  # Number of marks per row
         active_marks_section_pos = (0 - self.mark_size, 600 - self.mark_size)  # Starting position for active marks
@@ -124,7 +125,7 @@ class UI:
         ya = active_marks_section_pos[1]
         for i in range(len(active_marks)):
             xa += self.horizontal_offset
-            pygame.draw.rect(screen, self.children[i].color, (xa, ya, self.mark_size, self.mark_size))  # Draw active marks
+            pygame.draw.rect(screen, self.horses[i].color, (xa, ya, self.mark_size, self.mark_size))  # Draw active marks
             if xa >= width * (self.mark_size - 3):  # Move to the next row if the row is full
                 ya += self.vertical_offset
                 xa = active_marks_section_pos[0]
