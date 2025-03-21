@@ -11,22 +11,22 @@ WHITE = (255, 255, 255)  # Define white color
 
 UI = UI()  # Initialize UI
 grass = Background("images/grass.jpg", 0, 0)  # Create background
-horse1 = Horse("images/horse.png", 50, 50)  # Create a horse
-barrier1 = Barrier("images/barrier.png", 400, 300)  # Create a barrier
+horse1 = Horse("images/Horse_1.png", 50, 50)  # Create a horse
+barrier1 = Barrier("images/Barrier.png", 400, 300)  # Create a barrier
 
 BARRIER_SPEED = 1  # Speed of the barriers
 
 grass.set_size(WIDTH, HEIGHT)  # Set background size
 
 gameobjects = []  # List of all game objects
-horses = [Horse("images/horse.png", 50, 50 * i) for i in range(50)]  # Create 50 horses
+horses = [Horse("images/Horse_1.png", 50, 50 * i) for i in range(50)]  # Create 50 horses
 barriers = [barrier1]  # List of barriers
 
 gameobjects.extend([grass])  # Add background to game objects
 gameobjects.extend(horses)  # Add horses to game objects
 gameobjects.extend(barriers)  # Add barriers to game objects
 
-spawner = Spawner("images/barrier.png")  # Initialize spawner
+spawner = Spawner("images/Barrier.png")  # Initialize spawner
 
 UI.add_children(horses)  # Add horses to UI
 while True:

@@ -6,19 +6,31 @@ WIDTH, HEIGHT = 800, 600
 class GameObject:
     x = 0
     y = 0
-    def __init__(self, image_path, x=0, y=0):
+    
+    def __init__(self, image_path, x=0, y=0, offset = (0, 0)):
+        self.children = []
         self.image = pygame.image.load(image_path)  # Load the image
         self.rect = self.image.get_rect(topleft=(x,y))  # Set the rectangle for the image
         self.set_position(x, y)  # Set initial position
+        self.offset = offset
     def draw(self, surface):
         surface.blit(self.image, self.rect)  # Draw the image on the surface
+        if len(self.children) == 0: return
+        for child in self.children:
+            child.draw(surface)
     def set_position(self, x, y):
         self.rect.x = x  # Update rectangle position
         self.rect.y = y
         self.x = x  # Update object position
         self.y = y
+        if len(self.children) == 0: return
+        for child in self.children:
+            child.set_position(x + child.offset[0], y + child.offset[1])
     def move(self, dx, dy):
         self.set_position(self.rect.x + dx, self.rect.y + dy)  # Move object by dx and dy
+        if len(self.children) == 0: return
+        for child in self.children:
+            self.set_position(self.rect.x + dx, self.rect.y + dy)
     def set_size(self, width, height):
         self.image = pygame.transform.scale(self.image, (width,height))  # Resize the image
         self.rect = self.image.get_rect(topleft=(self.x,self.y))  # Update rectangle size
@@ -27,6 +39,11 @@ class GameObject:
         self.rect = self.image.get_rect(topleft=(self.x,self.y))  # Update rectangle size
     def get_position(self):
         return (self.x, self.y)  # Return current position
+    def set_children(self, child):
+        self.children.append(child)
+    def recolor(self, color): #Method to recolor
+        self.image.fill(color, special_flags=pygame.BLEND_MULT)
+        self.image.set_colorkey(None)  # Explicitly disable colorkey
 
 class Horse(GameObject):
     default_vacceleration = 0.5  # Default acceleration value
@@ -34,12 +51,19 @@ class Horse(GameObject):
     vacceleration = 0  # Vertical acceleration
     stopped = False  # Whether the horse is stopped
     color = ()  # Color of the horse's mark
+    ribbon_fill = None
+    ribbon_out = None
     def __init__(self, image_path, x, y):
+        super().__init__(image_path, x, y)
         self.vspeed = 0
         self.vacceleration = 0
         self.stopped = False
         self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))  # Random color for the mark
-        super().__init__(image_path, x, y)
+        self.ribbon_fill = GameObject("images/Ribbon_fill.png", self.x, self.y, (-13, -26))
+        self.ribbon_fill.recolor(self.color)
+        self.ribbon_out = GameObject("images/Ribbon_out.png", self.x, self.y, (-13, -26))
+        self.set_children(self.ribbon_fill)
+        self.set_children(self.ribbon_out)
         self.set_size(75, 75)  # Set the size of the horse
     def apply_vspeed(self):
         pos = self.get_position()
@@ -63,8 +87,8 @@ class Horse(GameObject):
         self.set_vacceleration(0)
         self.set_vspeed(0)
     def draw(self, surface):
-        surface.blit(self.image, self.rect)  # Draw the horse
-        pygame.draw.rect(surface, self.color, (self.x + 40, self.y + 20, 25, 25))  # Draw the horse's mark
+        super().draw(surface)  # Draw the horse
+        #pygame.draw.rect(surface, self.color, (self.x + 40, self.y + 20, 25, 25))  # Draw the horse's mark
 
 class Background(GameObject):
     def __init__(self, image_path, x, y):
@@ -114,6 +138,7 @@ class UI:
             if 800 - xu >= width * self.mark_size:  # Move to the next row if the row is full
                 yu += self.vertical_offset
                 xu = unactive_marks_section_pos[0]
+
 
 class Spawner:
     active = True  # Whether the spawner is active
