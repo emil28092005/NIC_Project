@@ -3,9 +3,9 @@ import torch.nn as nn
 import numpy as np
 
 class NeuralNetwork(nn.Module):
-    def __init__(self):
+    def __init__(self, inputSize):
         super(NeuralNetwork, self).__init__()
-        self.hidden = nn.Linear(5, 10)
+        self.hidden = nn.Linear(inputSize, 10)
         self.output = nn.Linear(10, 3)
 
     def forward(self, x):
@@ -14,14 +14,15 @@ class NeuralNetwork(nn.Module):
         return torch.log_softmax(x)
 
 class GeneticAlgorithm:
-    def __init__(self, populationSize: int, mutationRate: float, percentageBest):
+    def __init__(self, populationSize: int, mutationRate: float, percentageBest: float, inputSize: int = 5):
         self.populationSize = populationSize
         self.mutationRate = mutationRate
         self.percentageBest = percentageBest
+        self.inputSize = inputSize
         self.initialize_population()
 
     def initialize_population(self):
-        self.population = [NeuralNetwork() for _ in range(self.populationSize)]
+        self.population = [NeuralNetwork(self.inputSize) for _ in range(self.populationSize)]
     
     def crossover(self, parent1: NeuralNetwork, parent2: NeuralNetwork):
         child1 = NeuralNetwork()

@@ -1,6 +1,11 @@
 import pygame
 import sys
 from gameobjects import *
+from genetic_alg import GeneticAlgorithm
+
+POPULATION_SIZE = 50
+MUTATION_RATE = 0.5
+POPULATION_BEST = 0.2
 
 pygame.init()
 
@@ -19,7 +24,7 @@ BARRIER_SPEED = 1  # Speed of the barriers
 grass.set_size(WIDTH, HEIGHT)  # Set background size
 
 gameobjects = []  # List of all game objects
-horses = [Horse("images/Horse_1.png", 50, 50 * i) for i in range(50)]  # Create 50 horses
+horses = [Horse("images/Horse_1.png", 50, 50 * i) for i in range(POPULATION_SIZE)]  # Create 50 horses
 barriers = [barrier1]  # List of barriers
 
 gameobjects.extend([grass])  # Add background to game objects
@@ -27,6 +32,8 @@ gameobjects.extend(horses)  # Add horses to game objects
 gameobjects.extend(barriers)  # Add barriers to game objects
 
 spawner = Spawner("images/Barrier.png")  # Initialize spawner
+
+genecticAlg = GeneticAlgorithm(POPULATION_SIZE, MUTATION_RATE, POPULATION_BEST)
 
 UI.add_horses(horses)  # Add horses to UI
 while True:
