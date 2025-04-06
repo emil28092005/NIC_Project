@@ -10,7 +10,7 @@ pygame.display.set_caption("NIC_Project")  # Set window title
 WHITE = (255, 255, 255)  # Define white color
 
 UI = UI()  # Initialize UI
-grass = Background("images/grass.jpg", 0, 0)  # Create background
+grass = Background("images/Grass.jpg", 0, 0)  # Create background
 horse1 = Horse("images/Horse_1.png", 50, 50)  # Create a horse
 barrier1 = Barrier("images/Barrier.png", 400, 300)  # Create a barrier
 
@@ -19,14 +19,24 @@ BARRIER_SPEED = 1  # Speed of the barriers
 grass.set_size(WIDTH, HEIGHT)  # Set background size
 
 gameobjects = []  # List of all game objects
-horses = [Horse("images/Horse_1.png", 50, 50 * i) for i in range(50)]  # Create 50 horses
+horses = [Horse("images/Horse_1.png", 50, HEIGHT/2 + 0 * i) for i in range(50)]  # Create 50 horses
 barriers = [barrier1]  # List of barriers
 
 gameobjects.extend([grass])  # Add background to game objects
 gameobjects.extend(horses)  # Add horses to game objects
 gameobjects.extend(barriers)  # Add barriers to game objects
 
+upper_bound_rect = pygame.Rect(0, 0, WIDTH, -10), 
+lower_bound_rect = pygame.Rect(0, HEIGHT, WIDTH, 10), 
+
 spawner = Spawner("images/Barrier.png")  # Initialize spawner
+last_barrier = barriers[0]
+
+def get_features(horse):
+    features = [last_barrier.rect.topleft, last_barrier.rect.bottomleft,
+               last_barrier.rect.bottomright, last_barrier.rect.topright, 
+               HEIGHT, horse.rect.topleft]
+    return features 
 
 UI.add_horses(horses)  # Add horses to UI
 while True:
@@ -57,6 +67,7 @@ while True:
         new_barrier = spawner.spawn()  # Spawn a new barrier
         barriers.append(new_barrier)  # Add barrier to barriers list
         gameobjects.append(new_barrier)  # Add barrier to game objects
+        last_barrier = new_barrier
 
     for barrier in barriers:
         barrier.move(-BARRIER_SPEED, 0)  # Move barriers to the left
@@ -67,6 +78,9 @@ while True:
             for barrier in barriers:
                 if horse.rect.colliderect(barrier.rect):  # If collision detected
                     horse.stop()  # Stop the horse
+            if horse.rect.colliderect(upper_bound_rect) or horse.rect.colliderect(lower_bound_rect):
+                horse.stop()
+                
 
     for object in gameobjects:
         object.draw(screen)  # Draw all game objects
