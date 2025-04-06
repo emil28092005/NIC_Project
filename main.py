@@ -35,7 +35,8 @@ last_barrier = barriers[0]
 def get_features(horse):
     features = [last_barrier.rect.topleft, last_barrier.rect.bottomleft,
                last_barrier.rect.bottomright, last_barrier.rect.topright, 
-               HEIGHT, horse.rect.topleft]
+               horse.rect.topleft, horse.rect.bottomleft, horse.rect.bottomright, horse.rect.topright,
+               HEIGHT]
     return features 
 
 UI.add_horses(horses)  # Add horses to UI
