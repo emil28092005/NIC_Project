@@ -117,6 +117,7 @@ class Barrier(GameObject):
         self.scale_by(5)
 
 class UI:
+    iteration_num = 0
     horses = []  # List of child objects
     horizontal_offset = 25  # Horizontal spacing between marks
     vertical_offset = -25  # Vertical spacing between marks
