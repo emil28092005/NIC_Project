@@ -45,7 +45,7 @@ def get_features(horse):
                HEIGHT, BARRIER_SPEED]
     return features 
 
-genecticAlg = GeneticAlgorithm(POPULATION_SIZE, MUTATION_RATE, POPULATION_BEST)
+genecticAlg = GeneticAlgorithm(POPULATION_SIZE, MUTATION_RATE, POPULATION_BEST, 10)
 
 UI.add_horses(horses)  # Add horses to UI
 while True:
@@ -56,14 +56,16 @@ while True:
 
     keys = pygame.key.get_pressed()  # Get pressed keys
     
-    for horse in horses:
+    for i, horse in enumerate(horses):
         if horse.stopped == False:  # If the horse is not stopped
-            if keys[pygame.K_UP]:  # Move horse up if UP key is pressed
-                horse.up()           
-            elif keys[pygame.K_DOWN]:  # Move horse down if DOWN key is pressed
-                horse.down()         
+            data = get_features(horse)
+            res = genecticAlg.predict(data, i)
+            if res == 0:
+                horse.up()
+            elif res == 1:
+                horse.down()
             else:
-                horse.stay()  # Stop vertical movement if no key is pressed
+                horse.stay()
         else:
             horse.move(-BARRIER_SPEED, 0)  # Move stopped horse to the left
 

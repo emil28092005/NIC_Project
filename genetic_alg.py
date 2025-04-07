@@ -4,14 +4,14 @@ import numpy as np
 
 class NeuralNetwork(nn.Module):
     def __init__(self, inputSize):
-        super(NeuralNetwork, self).__init__()
+        super().__init__()
         self.hidden = nn.Linear(inputSize, 10)
         self.output = nn.Linear(10, 3)
 
     def forward(self, x):
         x = torch.relu(self.hidden(x))
         x = self.output(x)
-        return torch.log_softmax(x)
+        return torch.argmax(x)
 
 class GeneticAlgorithm:
     def __init__(self, populationSize: int, mutationRate: float, percentageBest: float, inputSize: int = 5):
@@ -54,7 +54,11 @@ class GeneticAlgorithm:
             self.population.extend([child1, child2])
         while len(self.population) > self.populationSize: self.population.pop()
     
-    def predict(self, data: list):
+    def predict(self, data: list, i):
+        data = torch.tensor(data, requires_grad=False).float()
+        return self.population[i](data)
+
+    def predict_all(self, data: list):
         result = []
         for i in range(self.populationSize):
             result.append(self.population[i](data[i]))
