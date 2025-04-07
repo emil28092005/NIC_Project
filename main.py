@@ -33,10 +33,11 @@ spawner = Spawner("images/Barrier.png")  # Initialize spawner
 last_barrier = barriers[0]
 
 def get_features(horse):
-    features = [last_barrier.rect.topleft, last_barrier.rect.bottomleft,
-               last_barrier.rect.bottomright, last_barrier.rect.topright, 
-               horse.rect.topleft, horse.rect.bottomleft, horse.rect.bottomright, horse.rect.topright,
-               HEIGHT]
+    features = [last_barrier.rect.topleft[0], last_barrier.rect.topleft[1],
+               last_barrier.rect.bottomright[0], last_barrier.rect.bottomright[1], 
+               horse.rect.topleft[0], horse.rect.topleft[1],
+               horse.rect.bottomright[0], horse.rect.bottomright[1],
+               HEIGHT, BARRIER_SPEED]
     return features 
 
 UI.add_horses(horses)  # Add horses to UI
