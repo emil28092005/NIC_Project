@@ -42,7 +42,7 @@ def get_features(horse):
                last_barrier.rect.bottomright[0], last_barrier.rect.bottomright[1], 
                horse.rect.topleft[0], horse.rect.topleft[1],
                horse.rect.bottomright[0], horse.rect.bottomright[1],
-               HEIGHT, BARRIER_SPEED]
+               HEIGHT, BARRIER_SPEED, 0]
     return features 
 
 genecticAlg = GeneticAlgorithm(POPULATION_SIZE, MUTATION_RATE, POPULATION_BEST, 10)
@@ -91,6 +91,7 @@ while True:
                     horse.stop()  # Stop the horse
             if horse.rect.colliderect(upper_bound_rect) or horse.rect.colliderect(lower_bound_rect):
                 horse.stop()
+            horse.count_fitness
                 
 
     for object in gameobjects:
