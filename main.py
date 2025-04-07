@@ -1,6 +1,11 @@
 import pygame
 import sys
 from gameobjects import *
+from genetic_alg import GeneticAlgorithm
+
+POPULATION_SIZE = 50
+MUTATION_RATE = 0.5
+POPULATION_BEST = 0.2
 
 pygame.init()
 
@@ -39,6 +44,8 @@ def get_features(horse):
                horse.rect.bottomright[0], horse.rect.bottomright[1],
                HEIGHT, BARRIER_SPEED]
     return features 
+
+genecticAlg = GeneticAlgorithm(POPULATION_SIZE, MUTATION_RATE, POPULATION_BEST)
 
 UI.add_horses(horses)  # Add horses to UI
 while True:
