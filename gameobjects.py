@@ -2,7 +2,7 @@ import pygame
 import random
 
 WIDTH, HEIGHT = 800, 600
-
+HUD_HEIGHT = 150
 class GameObject:
     x = 0
     y = 0
@@ -122,8 +122,10 @@ class UI:
     horizontal_offset = 25  # Horizontal spacing between marks
     vertical_offset = -25  # Vertical spacing between marks
     mark_size = 25  # Size of the marks
-    def __init__(self):
+    def __init__(self, hud_image_path, x=0, y=HEIGHT):
         self.horses = []  # Initialize children list
+        self.hud_image = pygame.image.load(hud_image_path)
+        self.hud_rect = self.hud_image.get_rect(topleft=(x,y))
     def add_horses(self, children):
         new_horses = [child for child in children if child not in self.horses]  # Add new children
         self.horses.extend(new_horses)
@@ -138,7 +140,7 @@ class UI:
                     unactive_marks.append(self.horses[i])  # Add inactive horses
 
         width = 10  # Number of marks per row
-        active_marks_section_pos = (0 - self.mark_size, 600 - self.mark_size)  # Starting position for active marks
+        active_marks_section_pos = (0 - self.mark_size, HEIGHT + HUD_HEIGHT - self.mark_size)  # Starting position for active marks
         xa = active_marks_section_pos[0]
         ya = active_marks_section_pos[1]
         for i in range(len(active_marks)):
@@ -148,15 +150,19 @@ class UI:
                 ya += self.vertical_offset
                 xa = active_marks_section_pos[0]
 
-        unactive_marks_section_pos = (800, 600 - self.mark_size)  # Starting position for inactive marks
+        unactive_marks_section_pos = (WIDTH, HEIGHT + HUD_HEIGHT - self.mark_size)  # Starting position for inactive marks
         xu = unactive_marks_section_pos[0]
         yu = unactive_marks_section_pos[1]
         for i in range(len(unactive_marks)):
             xu -= self.horizontal_offset
             pygame.draw.rect(screen, unactive_marks[i].color, (xu, yu, self.mark_size, self.mark_size))  # Draw inactive marks
-            if 800 - xu >= width * self.mark_size:  # Move to the next row if the row is full
+            if WIDTH - xu >= width * self.mark_size:  # Move to the next row if the row is full
                 yu += self.vertical_offset
                 xu = unactive_marks_section_pos[0]
+    def draw(self, surface):
+        surface.blit(self.hud_image, self.hud_rect)
+
+        
 
 
 class Spawner:

@@ -10,12 +10,12 @@ FRAME_RATE = 160 #TODO: FIX THE INCORRECT FRAME RATE CORRELATION
 
 pygame.init()
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))  # Initialize the screen
+screen = pygame.display.set_mode((WIDTH, HEIGHT + HUD_HEIGHT))  # Initialize the screen
 pygame.display.set_caption("NIC_Project")  # Set window title
 
 WHITE = (255, 255, 255)  # Define white color
 
-UI = UI()  # Initialize UI
+UI = UI("images/HUD.png")  # Initialize UI
 gameobjects = []
 horses = []
 barriers = []
@@ -118,8 +118,10 @@ while True:
 
     for object in gameobjects:
         object.draw(screen)  # Draw all game objects
-    UI.draw_marks(screen)  # Draw UI marks
 
+    UI.draw(screen)
+    UI.draw_marks(screen)  # Draw UI marks
+    
     if all(horse.stopped for horse in horses):
         UI.iteration_num += 1
         init_game()
