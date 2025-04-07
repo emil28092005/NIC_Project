@@ -65,6 +65,7 @@ class Horse(GameObject):
         self.vspeed = 0
         self.vacceleration = 0
         self.stopped = False
+        self.fitness = 0
         self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))  # Random color for the mark
         self.ribbon_fill = GameObject("images/Ribbon_fill.png", self.x, self.y, (16, -1))
         self.ribbon_fill.recolor(self.color)
@@ -102,6 +103,9 @@ class Horse(GameObject):
             self.frame_counter = 0
             self.current_frame = (self.current_frame + 1) % len(self.images)
             self.image = self.images[self.current_frame]
+    def count_fitness(self):
+        if self.stopped == False:
+            self.fitness += 1
 
 class Background(GameObject):
     def __init__(self, image_path, x, y):
