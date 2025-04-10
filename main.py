@@ -8,6 +8,7 @@ MUTATION_RATE = 0.5
 POPULATION_BEST = 0.2
 FRAME_RATE = 160 #TODO: FIX THE INCORRECT FRAME RATE CORRELATION
 BARRIER_SPEED = 10
+BARRIER_DELAY = 75
 
 pygame.init()
 
@@ -45,7 +46,7 @@ def init_game():
         horse.set_vspeed(0)
         horse.frame_counter = 0
         horse.fitness = 0
-    spawner = Spawner("images/Barrier.png", 125)
+    spawner = Spawner("images/Barrier.png", BARRIER_DELAY)
     new_barrier = spawner.spawn()
     barriers.append(new_barrier)
     gameobjects.extend(horses)
