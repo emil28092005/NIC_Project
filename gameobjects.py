@@ -131,36 +131,39 @@ class UI:
     def add_horses(self, children):
         new_horses = [child for child in children if child not in self.horses]  # Add new children
         self.horses.extend(new_horses)
+
     def draw_marks(self, screen):
-        active_marks = []  # List of active horses
-        unactive_marks = []  # List of inactive horses
-        for i in range(len(self.horses)):
-            if isinstance(self.horses[i], Horse):
-                if (self.horses[i].stopped == False):
-                    active_marks.append(self.horses[i])  # Add active horses
-                else:
-                    unactive_marks.append(self.horses[i])  # Add inactive horses
-
+        active_marks = [horse for horse in self.horses if not horse.stopped]
+        unactive_marks = [horse for horse in self.horses if horse.stopped]
+    
         width = 10  # Number of marks per row
-        active_marks_section_pos = (0 - self.mark_size, HEIGHT + HUD_HEIGHT - self.mark_size)  # Starting position for active marks
-        xa = active_marks_section_pos[0]
-        ya = active_marks_section_pos[1]
-        for i in range(len(active_marks)):
-            xa += self.horizontal_offset
-            pygame.draw.rect(screen, self.horses[i].color, (xa, ya, self.mark_size, self.mark_size))  # Draw active marks
-            if xa >= width * (self.mark_size - 3):  # Move to the next row if the row is full
+    
+        # Отрисовка активных меток
+        xa = 0  # Horizontal position for active marks
+        ya = HEIGHT + HUD_HEIGHT - self.mark_size  # Vertical position for active marks
+    
+        for i, horse in enumerate(active_marks):
+            pygame.draw.rect(screen, horse.color, (xa, ya, self.mark_size, self.mark_size))
+            xa += self.horizontal_offset  # Move to the next position
+    
+            # Move to the next row if the row is full
+            if (i + 1) % width == 0:  # Check if the next mark would be on a new row
                 ya += self.vertical_offset
-                xa = active_marks_section_pos[0]
-
-        unactive_marks_section_pos = (WIDTH, HEIGHT + HUD_HEIGHT - self.mark_size)  # Starting position for inactive marks
-        xu = unactive_marks_section_pos[0]
-        yu = unactive_marks_section_pos[1]
-        for i in range(len(unactive_marks)):
-            xu -= self.horizontal_offset
-            pygame.draw.rect(screen, unactive_marks[i].color, (xu, yu, self.mark_size, self.mark_size))  # Draw inactive marks
-            if WIDTH - xu >= width * self.mark_size:  # Move to the next row if the row is full
+                xa = 0  # Reset horizontal position for the new row
+    
+        # Отрисовка неактивных меток
+        xu = WIDTH - self.mark_size  # Horizontal position for inactive marks
+        yu = HEIGHT + HUD_HEIGHT - self.mark_size  # Vertical position for inactive marks
+    
+        for i, horse in enumerate(unactive_marks):
+            pygame.draw.rect(screen, horse.color, (xu, yu, self.mark_size, self.mark_size))
+            xu -= self.horizontal_offset  # Move to the next position
+    
+            # Move to the next row if the row is full
+            if (i + 1) % width == 0:  # Check if the next mark would be on a new row
                 yu += self.vertical_offset
-                xu = unactive_marks_section_pos[0]
+                xu = WIDTH - self.mark_size # Reset horizontal position for the new row
+
     def draw(self, surface):
         surface.blit(self.hud_image, self.hud_rect)
 

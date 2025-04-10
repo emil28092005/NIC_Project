@@ -7,7 +7,7 @@ POPULATION_SIZE = 50
 MUTATION_RATE = 0.5
 POPULATION_NEW = 0.1
 POPULATION_BEST = 0.2
-FRAME_RATE = 160 #TODO: FIX THE INCORRECT FRAME RATE CORRELATION
+FRAME_RATE = 160  # TODO: FIX THE INCORRECT FRAME RATE CORRELATION
 BARRIER_SPEED = 10
 BARRIER_DELAY = 100
 
@@ -22,12 +22,11 @@ UI = UI("images/HUD.png")  # Initialize UI
 gameobjects = []
 horses = []
 barriers = []
-
 upper_bound_rect = None
 lower_bound_rect = None
-
 spawner = None
 last_barrier = None
+
 
 def init_game():
     global gameobjects, horses, barriers, upper_bound_rect, lower_bound_rect, spawner, last_barrier, BARRIER_SPEED
@@ -35,11 +34,9 @@ def init_game():
     grass = Background("images/Grass.jpg", 0, 0)
     grass.set_size(WIDTH, HEIGHT)
 
-    gameobjects = []
-    
+    gameobjects = [grass]
     barriers = []
 
-    gameobjects = [grass]
     for horse in horses:
         horse.set_position(50, HEIGHT/2)
         horse.stopped = False
@@ -47,31 +44,38 @@ def init_game():
         horse.set_vspeed(0)
         horse.frame_counter = 0
         horse.fitness = 0
+
     spawner = Spawner("images/Barrier.png", BARRIER_DELAY)
     new_barrier = spawner.spawn()
     barriers.append(new_barrier)
+
     gameobjects.extend(horses)
     gameobjects.extend(barriers)
-    
+
     upper_bound_rect = pygame.Rect(0, 0, WIDTH, -10)
     lower_bound_rect = pygame.Rect(0, HEIGHT, WIDTH, 10)
 
-    
     last_barrier = barriers[0]
 
     UI.add_horses(horses)
 
+
 def get_features(horse):
     features = [last_barrier.rect.topleft[0], last_barrier.rect.topleft[1],
-               last_barrier.rect.bottomright[0], last_barrier.rect.bottomright[1], 
-               horse.rect.topleft[0], horse.rect.topleft[1],
-               horse.rect.bottomright[0], horse.rect.bottomright[1],
-               0, HEIGHT, BARRIER_SPEED]
-    return features 
+                last_barrier.rect.bottomright[0], last_barrier.rect.bottomright[1],
+                horse.rect.topleft[0], horse.rect.topleft[1],
+                horse.rect.bottomright[0], horse.rect.bottomright[1],
+                0, HEIGHT, BARRIER_SPEED]
+    return features
+
 
 horses = [Horse("images/Horse_1.png", 50, HEIGHT/2 + 0 * i) for i in range(POPULATION_SIZE)]
+
 init_game()
-genecticAlg = GeneticAlgorithm(POPULATION_SIZE, MUTATION_RATE, POPULATION_BEST, POPULATION_NEW, len(get_features(horses[0])))
+
+genecticAlg = GeneticAlgorithm(POPULATION_SIZE, MUTATION_RATE, POPULATION_BEST, POPULATION_NEW,
+                                len(get_features(horses[0])))
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:  # Handle window close event
@@ -79,9 +83,9 @@ while True:
             sys.exit()
 
     keys = pygame.key.get_pressed()  # Get pressed keys
-    
+
     for i, horse in enumerate(horses):
-        if horse.stopped == False:  # If the horse is not stopped
+        if not horse.stopped:  # If the horse is not stopped
             data = get_features(horse)
             res = genecticAlg.predict(data, i)
             if res == 0:
@@ -109,26 +113,26 @@ while True:
 
     for horse in horses:
         horse.update_animation()
-        if horse.stopped == False:  # Check for collisions between horses and barriers
+
+        if not horse.stopped:
             for barrier in barriers:
-                if horse.rect.colliderect(barrier.rect):  # If collision detected
-                    horse.stop()  # Stop the horse
+                if horse.rect.colliderect(barrier.rect):
+                    horse.stop()
             if horse.rect.colliderect(upper_bound_rect) or horse.rect.colliderect(lower_bound_rect):
                 horse.stop()
             horse.count_fitness()
-            # print(str(horse.color) + ': ' + str(horse.fitness))
-                
+
 
     for object in gameobjects:
         object.draw(screen)  # Draw all game objects
 
-    UI.draw(screen)
-    UI.draw_marks(screen)  # Draw UI marks
-    
     if all(horse.stopped for horse in horses):
         UI.iteration_num += 1
         genecticAlg.learn([x.fitness for x in horses])
         init_game()
 
+    UI.draw(screen)
+    UI.draw_marks(screen)
+    
     pygame.display.flip()  # Update the display
     pygame.time.Clock().tick(FRAME_RATE)  # Limit the frame rate to 160 FPS
