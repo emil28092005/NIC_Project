@@ -115,7 +115,7 @@ while True:
             if horse.rect.colliderect(upper_bound_rect) or horse.rect.colliderect(lower_bound_rect):
                 horse.stop()
             horse.count_fitness()
-            print(str(horse.color) + ' ' + str(horse.fitness))
+            print(str(horse.color) + ': ' + str(horse.fitness))
                 
 
     for object in gameobjects:
