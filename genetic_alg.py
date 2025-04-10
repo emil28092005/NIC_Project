@@ -5,11 +5,13 @@ import numpy as np
 class NeuralNetwork(nn.Module):
     def __init__(self, inputSize):
         super().__init__()
-        self.hidden = nn.Linear(inputSize, 32)
-        self.output = nn.Linear(32, 3)
+        self.hidden1 = nn.Linear(inputSize, 32)
+        self.hidden2 = nn.Linear(32, 16)
+        self.output = nn.Linear(16, 3)
 
     def forward(self, x):
-        x = torch.relu(self.hidden(x))
+        x = torch.relu(self.hidden1(x))
+        x = torch.relu(self.hidden2(x))
         x = self.output(x)
         return torch.argmax(x)
 
@@ -28,9 +30,12 @@ class GeneticAlgorithm:
     def crossover(self, parent1: NeuralNetwork, parent2: NeuralNetwork):
         child1 = NeuralNetwork(self.inputSize).to(self.device)
         child2 = NeuralNetwork(self.inputSize).to(self.device)
-        point = len(child1.hidden.weight.data) // 2
-        child1.hidden.weight.data = torch.cat((parent1.hidden.weight.data[:point], parent2.hidden.weight.data[point:]), dim=0)
-        child2.hidden.weight.data = torch.cat((parent2.hidden.weight.data[:point], parent1.hidden.weight.data[point:]), dim=0)
+        point1 = len(child1.hidden1.weight.data) // 2
+        point2 = len(child1.hidden2.weight.data) // 2
+        child1.hidden1.weight.data = torch.cat((parent1.hidden1.weight.data[:point1], parent2.hidden1.weight.data[point1:]), dim=0)
+        child2.hidden1.weight.data = torch.cat((parent2.hidden1.weight.data[:point1], parent1.hidden1.weight.data[point1:]), dim=0)
+        child1.hidden2.weight.data = torch.cat((parent1.hidden2.weight.data[:point2], parent2.hidden2.weight.data[point2:]), dim=0)
+        child2.hidden2.weight.data = torch.cat((parent2.hidden2.weight.data[:point2], parent1.hidden2.weight.data[point2:]), dim=0)
         child1.output.weight.data = parent1.output.weight.data.clone().detach()
         child2.output.weight.data = parent2.output.weight.data.clone().detach()
         return child1, child2
