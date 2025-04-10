@@ -34,6 +34,11 @@ def init_game():
     grass = Background("images/Grass.jpg", 0, 0)
     grass.set_size(WIDTH, HEIGHT)
 
+<<<<<<< Updated upstream
+=======
+    BARRIER_SPEED = 25
+
+>>>>>>> Stashed changes
     gameobjects = []
     
     barriers = []
