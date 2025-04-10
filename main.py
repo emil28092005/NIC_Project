@@ -3,10 +3,13 @@ import sys
 from gameobjects import *
 from genetic_alg import GeneticAlgorithm
 
-POPULATION_SIZE = 20
+POPULATION_SIZE = 50
 MUTATION_RATE = 0.5
+POPULATION_NEW = 0.1
 POPULATION_BEST = 0.2
 FRAME_RATE = 160 #TODO: FIX THE INCORRECT FRAME RATE CORRELATION
+BARRIER_SPEED = 10
+BARRIER_DELAY = 100
 
 pygame.init()
 
@@ -32,8 +35,6 @@ def init_game():
     grass = Background("images/Grass.jpg", 0, 0)
     grass.set_size(WIDTH, HEIGHT)
 
-    BARRIER_SPEED = 25
-
     gameobjects = []
     
     barriers = []
@@ -46,7 +47,7 @@ def init_game():
         horse.set_vspeed(0)
         horse.frame_counter = 0
         horse.fitness = 0
-    spawner = Spawner("images/Barrier.png", 125)
+    spawner = Spawner("images/Barrier.png", BARRIER_DELAY)
     new_barrier = spawner.spawn()
     barriers.append(new_barrier)
     gameobjects.extend(horses)
@@ -65,12 +66,12 @@ def get_features(horse):
                last_barrier.rect.bottomright[0], last_barrier.rect.bottomright[1], 
                horse.rect.topleft[0], horse.rect.topleft[1],
                horse.rect.bottomright[0], horse.rect.bottomright[1],
-               HEIGHT, BARRIER_SPEED]
+               0, HEIGHT, BARRIER_SPEED]
     return features 
 
-genecticAlg = GeneticAlgorithm(POPULATION_SIZE, MUTATION_RATE, POPULATION_BEST, 10)
 horses = [Horse("images/Horse_1.png", 50, HEIGHT/2 + 0 * i) for i in range(POPULATION_SIZE)]
 init_game()
+genecticAlg = GeneticAlgorithm(POPULATION_SIZE, MUTATION_RATE, POPULATION_BEST, POPULATION_NEW, len(get_features(horses[0])))
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:  # Handle window close event
@@ -115,7 +116,7 @@ while True:
             if horse.rect.colliderect(upper_bound_rect) or horse.rect.colliderect(lower_bound_rect):
                 horse.stop()
             horse.count_fitness()
-            print(str(horse.color) + ': ' + str(horse.fitness))
+            # print(str(horse.color) + ': ' + str(horse.fitness))
                 
 
     for object in gameobjects:
