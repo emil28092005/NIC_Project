@@ -3,7 +3,7 @@ import sys
 from gameobjects import *
 from genetic_alg import GeneticAlgorithm
 
-POPULATION_SIZE = 50
+POPULATION_SIZE = 20
 MUTATION_RATE = 0.5
 POPULATION_BEST = 0.2
 FRAME_RATE = 160 #TODO: FIX THE INCORRECT FRAME RATE CORRELATION
@@ -32,7 +32,7 @@ def init_game():
     grass = Background("images/Grass.jpg", 0, 0)
     grass.set_size(WIDTH, HEIGHT)
 
-    BARRIER_SPEED = 1
+    BARRIER_SPEED = 15
 
     gameobjects = []
     
@@ -46,7 +46,7 @@ def init_game():
         horse.set_vspeed(0)
         horse.frame_counter = 0
         horse.fitness = 0
-    spawner = Spawner("images/Barrier.png")
+    spawner = Spawner("images/Barrier.png", 125)
     new_barrier = spawner.spawn()
     barriers.append(new_barrier)
     gameobjects.extend(horses)

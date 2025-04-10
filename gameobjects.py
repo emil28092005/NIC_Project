@@ -167,16 +167,17 @@ class UI:
 
 class Spawner:
     active = True  # Whether the spawner is active
-    frequency = 500  # Number of ticks between spawns
+    delay = 500  # Number of ticks between spawns
     tick_counter = 0  # Counter for ticks
 
-    def __init__(self, barrier_image_path):
+    def __init__(self, barrier_image_path, delay):
         self.barrier_image_path = barrier_image_path  # Path to the barrier image
+        self.delay = delay
 
     def handle(self):
         if self.active:
             self.tick_counter += 1  # Increment tick counter
-            if self.tick_counter >= self.frequency:  # Check if it's time to spawn
+            if self.tick_counter >= self.delay:  # Check if it's time to spawn
                 self.spawn()
                 self.tick_counter = 0  # Reset tick counter
 
