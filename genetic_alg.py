@@ -5,8 +5,8 @@ import numpy as np
 class NeuralNetwork(nn.Module):
     def __init__(self, inputSize):
         super().__init__()
-        self.hidden = nn.Linear(inputSize, 10)
-        self.output = nn.Linear(10, 3)
+        self.hidden = nn.Linear(inputSize, 32)
+        self.output = nn.Linear(32, 3)
 
     def forward(self, x):
         x = torch.relu(self.hidden(x))
@@ -19,16 +19,16 @@ class GeneticAlgorithm:
         self.mutationRate = mutationRate
         self.percentageBest = percentageBest
         self.inputSize = inputSize
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.initialize_population()
 
     def initialize_population(self):
-        self.population = [NeuralNetwork(self.inputSize) for _ in range(self.populationSize)]
+        self.population = [NeuralNetwork(self.inputSize).to(self.device) for _ in range(self.populationSize)]
     
     def crossover(self, parent1: NeuralNetwork, parent2: NeuralNetwork):
-        child1 = NeuralNetwork()
-        child2 = NeuralNetwork()
+        child1 = NeuralNetwork(self.inputSize).to(self.device)
+        child2 = NeuralNetwork(self.inputSize).to(self.device)
         point = len(child1.hidden.weight.data) // 2
-        print([x for x in child1.parameters()])
         child1.hidden.weight.data = torch.cat((parent1.hidden.weight.data[:point], parent2.hidden.weight.data[point:]), dim=0)
         child2.hidden.weight.data = torch.cat((parent2.hidden.weight.data[:point], parent1.hidden.weight.data[point:]), dim=0)
         child1.output.weight.data = parent1.output.weight.data.clone().detach()
@@ -55,11 +55,5 @@ class GeneticAlgorithm:
         while len(self.population) > self.populationSize: self.population.pop()
     
     def predict(self, data: list, i):
-        data = torch.tensor(data, requires_grad=False).float()
+        data = torch.tensor(data, requires_grad=False).float().to(self.device)
         return self.population[i](data)
-
-    def predict_all(self, data: list):
-        result = []
-        for i in range(self.populationSize):
-            result.append(self.population[i](data[i]))
-        return result

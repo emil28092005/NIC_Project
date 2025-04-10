@@ -3,7 +3,7 @@ import sys
 from gameobjects import *
 from genetic_alg import GeneticAlgorithm
 
-POPULATION_SIZE = 5
+POPULATION_SIZE = 50
 MUTATION_RATE = 0.5
 POPULATION_BEST = 0.2
 FRAME_RATE = 160 #TODO: FIX THE INCORRECT FRAME RATE CORRELATION
@@ -45,6 +45,7 @@ def init_game():
         horse.set_vacceleration(0)
         horse.set_vspeed(0)
         horse.frame_counter = 0
+        horse.fitness = 0
     spawner = Spawner("images/Barrier.png")
     new_barrier = spawner.spawn()
     barriers.append(new_barrier)
@@ -124,6 +125,7 @@ while True:
     
     if all(horse.stopped for horse in horses):
         UI.iteration_num += 1
+        genecticAlg.learn([x.fitness for x in horses])
         init_game()
 
     pygame.display.flip()  # Update the display
