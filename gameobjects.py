@@ -46,7 +46,7 @@ class GameObject:
         self.image.set_colorkey(None)  # Explicitly disable colorkey
 
 class Horse(GameObject):
-    default_vacceleration = 0.3  # Default acceleration value
+    default_vacceleration = 0.2  # Default acceleration value
     vspeed = 0  # Vertical speed
     vacceleration = 0  # Vertical acceleration
     stopped = False  # Whether the horse is stopped

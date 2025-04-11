@@ -49,7 +49,7 @@ class GeneticAlgorithm:
     def mutate(self, model: NeuralNetwork):
         for param in model.parameters():
             if torch.rand(1).item() < self.mutationRate:
-                param.data += torch.randn_like(param.data) * 0.1 * (1 if torch.rand(1).item() >= 0.5 else -1)
+                param.data += torch.randn_like(param.data) * 0.1
         return model
 
     def learn(self, fitness: list):
