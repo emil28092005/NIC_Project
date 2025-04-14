@@ -106,8 +106,7 @@ class Horse(GameObject):
     def count_fitness(self):
         if self.stopped == False:
             self.fitness += 1
-            if self.vacceleration == 0:
-                self.fitness -= 0.9
+            if self.vspeed == 0: self.fitness -= 0.9
 
 class Background(GameObject):
     def __init__(self, image_path, x, y):

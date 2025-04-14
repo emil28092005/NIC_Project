@@ -7,7 +7,7 @@ POPULATION_SIZE = 100
 MUTATION_RATE = 0.5
 POPULATION_NEW = 0.1
 POPULATION_BEST = 0.3
-FRAME_RATE = 160  # TODO: FIX THE INCORRECT FRAME RATE CORRELATION
+FRAME_RATE = 300  # TODO: FIX THE INCORRECT FRAME RATE CORRELATION
 BARRIER_SPEED = 10
 BARRIER_DELAY = 100
 
@@ -66,6 +66,7 @@ def get_features(horse: Horse):
                 horse.rect.topleft[0], horse.rect.topleft[1],
                 horse.rect.bottomright[0], horse.rect.bottomright[1],
                 0, HEIGHT, horse.vspeed, horse.vacceleration, BARRIER_SPEED]
+    features = [x / HEIGHT for x in features]
     return features
 
 
