@@ -2,6 +2,8 @@ import pygame
 import sys
 from gameobjects import *
 from genetic_alg import GeneticAlgorithm
+import matplotlib
+matplotlib.use('Agg')  # Используем Agg бэкенд для сохранения в файл
 import matplotlib.pyplot as plt
 import random
 
@@ -12,7 +14,7 @@ POPULATION_BEST = 0.3
 FRAME_RATE = 300
 BARRIER_SPEED = 10
 BARRIER_DELAY = 100
-MAX_ITERATIONS = -1
+MAX_ITERATIONS = 50
 BARRIER_SEED = 42
 
 current_iteration = 1
@@ -40,7 +42,7 @@ last_barrier = None
 
 def init_game():
     global gameobjects, horses, barriers, upper_bound_rect, lower_bound_rect, spawner, last_barrier, BARRIER_SPEED
-    random.seed(BARRIER_SEED)
+    #random.seed(BARRIER_SEED)
     grass = Background("images/Grass.jpg", 0, 0)
     grass.set_size(WIDTH, HEIGHT)
 
@@ -94,7 +96,7 @@ while True:
             plt.xlabel("Iteration")
             plt.ylabel("Current Fitness")
             plt.title("Current Fitness per Iteration")
-            plt.show()
+            plt.savefig('fitness_plot.png')  # Сохраняем график в файл
             pygame.quit()
             sys.exit()
 
