@@ -3,6 +3,7 @@ import random
 
 WIDTH, HEIGHT = 800, 600
 HUD_HEIGHT = 150
+BARRIER_SEED = 20
 class GameObject:
     x = 0
     y = 0
@@ -186,6 +187,7 @@ class Spawner:
                 self.tick_counter = 0  # Reset tick counter
 
     def spawn(self):
-        random_y = random.randint(0, HEIGHT - 100)  # Random Y position for the barrier
+
+        random_y = random.randint(0, HEIGHT - 100, )  # Random Y position for the barrier
         new_barrier = Barrier(self.barrier_image_path, WIDTH, random_y)  # Create a new barrier
         return new_barrier
