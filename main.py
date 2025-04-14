@@ -3,19 +3,21 @@ import sys
 from gameobjects import *
 from genetic_alg import GeneticAlgorithm
 import matplotlib.pyplot as plt
+import random
 
-POPULATION_SIZE = 300
+POPULATION_SIZE = 500
 MUTATION_RATE = 0.5
 POPULATION_NEW = 0.1
 POPULATION_BEST = 0.3
 FRAME_RATE = 300
 BARRIER_SPEED = 10
 BARRIER_DELAY = 100
-MAX_ITERATIONS = 5
+MAX_ITERATIONS = -1
 BARRIER_SEED = 42
 
 current_iteration = 1
 best_fitnesses = []
+running_fitnesses = []
 
 pygame.init()
 
@@ -38,7 +40,7 @@ last_barrier = None
 
 def init_game():
     global gameobjects, horses, barriers, upper_bound_rect, lower_bound_rect, spawner, last_barrier, BARRIER_SPEED
-
+    random.seed(BARRIER_SEED)
     grass = Background("images/Grass.jpg", 0, 0)
     grass.set_size(WIDTH, HEIGHT)
 
@@ -88,11 +90,10 @@ genecticAlg = GeneticAlgorithm(POPULATION_SIZE, MUTATION_RATE, POPULATION_BEST, 
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            # Generate and display the Matplotlib graph
-            plt.plot(best_fitnesses)
+            plt.plot(running_fitnesses)
             plt.xlabel("Iteration")
-            plt.ylabel("Max Fitness")
-            plt.title("Max Fitness per Iteration")
+            plt.ylabel("Current Fitness")
+            plt.title("Current Fitness per Iteration")
             plt.show()
             pygame.quit()
             sys.exit()
@@ -140,32 +141,32 @@ while True:
     for object in gameobjects:
         object.draw(screen)
 
+    current_fitnesses = [horse.fitness for horse in horses]
+    current_fitness = max(current_fitnesses)
+    
+
     if all(horse.stopped for horse in horses):
         UI.iteration_num += 1
         genecticAlg.learn([x.fitness for x in horses])
-        
-        # store the best fitness
-        best_fitnesses.append(max(genecticAlg.fitnessBest) if len(genecticAlg.fitnessBest) != 0 else 0)
+
+        local_best_fitness = max(horse.fitness for horse in horses)
+        best_fitnesses.append(local_best_fitness)
+        running_fitnesses.append(current_fitness)
         current_iteration += 1
-        if current_iteration > MAX_ITERATIONS:
-            # Generate and display the Matplotlib graph
-            plt.plot(best_fitnesses)
-            plt.xlabel("Iteration")
-            plt.ylabel("Max Fitness")
-            plt.title("Max Fitness per Iteration")
-            plt.show()
-            pygame.quit()
-            sys.exit()
         init_game()
 
     UI.draw(screen)
     UI.draw_marks(screen)
 
     iteration_num_txt = font.render(f"iteration: {current_iteration}", True, BLACK)
+    current_fitness_txt = font.render(
+        f"Current Fitness: {current_fitness}", True, BLACK)
     best_fitness_txt = font.render(
-        f"Best: {max(genecticAlg.fitnessBest) if len(genecticAlg.fitnessBest) != 0 else 0}", True, BLACK)
+        f"Best Fitness: {best_fitnesses[-1] if best_fitnesses else 0}", True, BLACK)
+
     screen.blit(iteration_num_txt, (WIDTH / 2 - 90, HEIGHT + HUD_HEIGHT - 120))
-    screen.blit(best_fitness_txt, (WIDTH / 2 - 90, HEIGHT + HUD_HEIGHT - 80))
+    screen.blit(best_fitness_txt, (WIDTH / 2 - 120, HEIGHT + HUD_HEIGHT - 80))
+    screen.blit(current_fitness_txt, (WIDTH / 2 - 140, HEIGHT + HUD_HEIGHT - 40))
 
     pygame.display.flip()
     pygame.time.Clock().tick(FRAME_RATE)
