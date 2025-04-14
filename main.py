@@ -3,20 +3,26 @@ import sys
 from gameobjects import *
 from genetic_alg import GeneticAlgorithm
 
-POPULATION_SIZE = 100
+POPULATION_SIZE = 300
 MUTATION_RATE = 0.5
 POPULATION_NEW = 0.1
 POPULATION_BEST = 0.3
 FRAME_RATE = 300  # TODO: FIX THE INCORRECT FRAME RATE CORRELATION
 BARRIER_SPEED = 10
 BARRIER_DELAY = 100
+MAX_ITERATIONS = 50
+
+current_iteration = 1
+
 
 pygame.init()
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT + HUD_HEIGHT))  # Initialize the screen
 pygame.display.set_caption("NIC_Project")  # Set window title
+font = pygame.font.SysFont("Arial", 36) 
 
 WHITE = (255, 255, 255)  # Define white color
+BLACK = (0, 0, 0)
 
 UI = UI("images/HUD.png")  # Initialize UI
 gameobjects = []
@@ -30,7 +36,7 @@ last_barrier = None
 
 def init_game():
     global gameobjects, horses, barriers, upper_bound_rect, lower_bound_rect, spawner, last_barrier, BARRIER_SPEED
-
+    random.seed(BARRIER_SEED)
     grass = Background("images/Grass.jpg", 0, 0)
     grass.set_size(WIDTH, HEIGHT)
 
@@ -125,15 +131,26 @@ while True:
 
 
     for object in gameobjects:
-        object.draw(screen)  # Draw all game objects
+        object.draw(screen)  # Draw all game objects  
+
 
     if all(horse.stopped for horse in horses):
         UI.iteration_num += 1
         genecticAlg.learn([x.fitness for x in horses])
+        current_iteration += 1
+        if current_iteration == MAX_ITERATIONS:
+            pygame.quit()
+            sys.exit()
         init_game()
 
     UI.draw(screen)
     UI.draw_marks(screen)
+
+    
+    iteration_num_txt = font.render(f"iteration: {current_iteration}", True, BLACK)
+    best_fitness_txt = font.render(f"Best: {max(genecticAlg.fitnessBest) if len(genecticAlg.fitnessBest) != 0 else 0}",True, BLACK)
+    screen.blit(iteration_num_txt, (WIDTH/2 - 90, HEIGHT + HUD_HEIGHT - 120)) 
+    screen.blit(best_fitness_txt, (WIDTH/2 - 90, HEIGHT + HUD_HEIGHT - 80)) 
     
     pygame.display.flip()  # Update the display
     pygame.time.Clock().tick(FRAME_RATE)  # Limit the frame rate to 160 FPS
