@@ -22,6 +22,9 @@ class GeneticAlgorithm:
         self.percentageBest = percentageBest
         self.percentageNew = percentageNew
         self.inputSize = inputSize
+
+        self.fitnessBest = []
+
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(self.device)
         self.initialize_population()
@@ -49,11 +52,14 @@ class GeneticAlgorithm:
     def mutate(self, model: NeuralNetwork):
         for param in model.parameters():
             if torch.rand(1).item() < self.mutationRate:
-                param.data += torch.randn_like(param.data) * 0.1 * (1 if torch.rand(1).item() >= 0.5 else -1)
+                param.data += torch.randn_like(param.data) * 0.1
         return model
 
     def learn(self, fitness: list):
-        self.population = [self.population[x] for x in np.argsort(fitness)[::-1]]
+        sortedFitnessArg = np.argsort(fitness)[::-1]
+        self.fitnessBest.append(fitness[sortedFitnessArg[0]])
+        print(self.fitnessBest[-1])
+        self.population = [self.population[x] for x in sortedFitnessArg]
         numBest = int(self.populationSize * self.percentageBest)
         self.population = self.population[:numBest]
         while len(self.population) < self.populationSize - self.populationSize * self.percentageNew:

@@ -3,11 +3,11 @@ import sys
 from gameobjects import *
 from genetic_alg import GeneticAlgorithm
 
-POPULATION_SIZE = 50
+POPULATION_SIZE = 100
 MUTATION_RATE = 0.5
 POPULATION_NEW = 0.1
-POPULATION_BEST = 0.2
-FRAME_RATE = 160  # TODO: FIX THE INCORRECT FRAME RATE CORRELATION
+POPULATION_BEST = 0.3
+FRAME_RATE = 300  # TODO: FIX THE INCORRECT FRAME RATE CORRELATION
 BARRIER_SPEED = 10
 BARRIER_DELAY = 100
 
@@ -60,12 +60,13 @@ def init_game():
     UI.add_horses(horses)
 
 
-def get_features(horse):
+def get_features(horse: Horse):
     features = [last_barrier.rect.topleft[0], last_barrier.rect.topleft[1],
                 last_barrier.rect.bottomright[0], last_barrier.rect.bottomright[1],
                 horse.rect.topleft[0], horse.rect.topleft[1],
                 horse.rect.bottomright[0], horse.rect.bottomright[1],
-                0, HEIGHT, BARRIER_SPEED]
+                0, HEIGHT, horse.vspeed, horse.vacceleration, BARRIER_SPEED]
+    features = [x / HEIGHT for x in features]
     return features
 
 
