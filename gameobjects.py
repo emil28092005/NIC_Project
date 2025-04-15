@@ -4,56 +4,69 @@ import random
 WIDTH, HEIGHT = 800, 600
 HUD_HEIGHT = 150
 BARRIER_SEED = 20
+
 class GameObject:
     x = 0
     y = 0
-    
-    def __init__(self, image_path, x=0, y=0, offset = (0, 0)):
+
+    def __init__(self, image_path, x=0, y=0, offset=(0, 0)):
         self.children = []
-        self.image = pygame.image.load(image_path)  # Load the image
-        self.rect = self.image.get_rect(topleft=(x,y))  # Set the rectangle for the image
-        self.set_position(x, y)  # Set initial position
+        self.image = pygame.image.load(image_path)
+        self.rect = self.image.get_rect(topleft=(x, y))
+        self.set_position(x, y)
         self.offset = offset
+
     def draw(self, surface):
-        surface.blit(self.image, self.rect)  # Draw the image on the surface
-        if len(self.children) == 0: return
+        surface.blit(self.image, self.rect)
+        if len(self.children) == 0:
+            return
         for child in self.children:
             child.draw(surface)
+
     def set_position(self, x, y):
-        self.rect.x = x  # Update rectangle position
+        self.rect.x = x
         self.rect.y = y
-        self.x = x  # Update object position
+        self.x = x
         self.y = y
-        if len(self.children) == 0: return
+        if len(self.children) == 0:
+            return
         for child in self.children:
             child.set_position(x + child.offset[0], y + child.offset[1])
+
     def move(self, dx, dy):
-        self.set_position(self.rect.x + dx, self.rect.y + dy)  # Move object by dx and dy
-        if len(self.children) == 0: return
+        self.set_position(self.rect.x + dx, self.rect.y + dy)
+        if len(self.children) == 0:
+            return
         for child in self.children:
             self.set_position(self.rect.x + dx, self.rect.y + dy)
+
     def set_size(self, width, height):
-        self.image = pygame.transform.scale(self.image, (width,height))  # Resize the image
-        self.rect = self.image.get_rect(topleft=(self.x,self.y))  # Update rectangle size
+        self.image = pygame.transform.scale(self.image, (width, height))
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
     def scale_by(self, scale):
-        self.image = pygame.transform.scale(self.image, (self.image.get_width() * scale, self.image.get_height() * scale))  # Scale the image
-        self.rect = self.image.get_rect(topleft=(self.x,self.y))  # Update rectangle size
+        self.image = pygame.transform.scale(self.image, (self.image.get_width() * scale, self.image.get_height() * scale))
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
     def get_position(self):
-        return (self.x, self.y)  # Return current position
+        return (self.x, self.y)
+
     def set_children(self, child):
         self.children.append(child)
-    def recolor(self, color): #Method to recolor
+
+    def recolor(self, color):
         self.image.fill(color, special_flags=pygame.BLEND_MULT)
-        self.image.set_colorkey(None)  # Explicitly disable colorkey
+        self.image.set_colorkey(None)
 
 class Horse(GameObject):
-    default_vacceleration = 0.2  # Default acceleration value
-    vspeed = 0  # Vertical speed
-    vacceleration = 0  # Vertical acceleration
-    stopped = False  # Whether the horse is stopped
-    color = ()  # Color of the horse's mark
+    default_vacceleration = 0.2
+    vspeed = 0
+    vacceleration = 0
+    stopped = False
+    color = ()
     ribbon_fill = None
     ribbon_out = None
+
     def __init__(self, image_path, x, y):
         super().__init__(image_path, x, y)
         self.images = []
@@ -67,127 +80,125 @@ class Horse(GameObject):
         self.vacceleration = 0
         self.stopped = False
         self.fitness = 0
-        self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))  # Random color for the mark
+        self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         self.ribbon_fill = GameObject("images/Ribbon_fill.png", self.x, self.y, (16, -1))
         self.ribbon_fill.recolor(self.color)
         self.ribbon_out = GameObject("images/Ribbon_out.png", self.x, self.y, (14, -2))
         self.set_children(self.ribbon_fill)
         self.set_children(self.ribbon_out)
-        # self.set_size(75, 75)  # Set the size of the horse
+
     def apply_vspeed(self):
         pos = self.get_position()
-        self.set_position(pos[0], pos[1] + self.vspeed)  # Apply vertical speed to position
+        self.set_position(pos[0], pos[1] + self.vspeed)
+
     def apply_vacceleration(self):
-        self.vspeed += self.vacceleration  # Apply acceleration to speed
+        self.vspeed += self.vacceleration
+
     def set_vspeed(self, speed):
-        self.vspeed = speed  # Set vertical speed
+        self.vspeed = speed
+
     def add_vspeed(self, delta):
-        self.vspeed += delta  # Add to vertical speed
+        self.vspeed += delta
+
     def set_vacceleration(self, vacceleration):
-        self.vacceleration = vacceleration  # Set vertical acceleration
+        self.vacceleration = vacceleration
+
     def up(self):
-        self.set_vacceleration(-self.default_vacceleration)  # Move up
+        self.set_vacceleration(-self.default_vacceleration)
+
     def down(self):
-        self.set_vacceleration(self.default_vacceleration)  # Move down
+        self.set_vacceleration(self.default_vacceleration)
+
     def stay(self):
-        self.set_vacceleration(0)  # Stop vertical movement
+        self.set_vacceleration(0)
+
     def stop(self):
-        self.stopped = True  # Stop the horse
+        self.stopped = True
         self.set_vacceleration(0)
         self.set_vspeed(0)
+
     def draw(self, surface):
-        super().draw(surface)  # Draw the horse
-        #pygame.draw.rect(surface, self.color, (self.x + 40, self.y + 20, 25, 25))  # Draw the horse's mark
+        super().draw(surface)
+
     def update_animation(self):
         self.frame_counter += 1
         if self.frame_counter >= self.animation_speed:
             self.frame_counter = 0
             self.current_frame = (self.current_frame + 1) % len(self.images)
             self.image = self.images[self.current_frame]
+
     def count_fitness(self):
         if self.stopped == False:
             self.fitness += 1
-            if self.vspeed == 0: self.fitness -= 0.9
+        if self.vspeed == 0:
+            self.fitness -= 0.9
 
 class Background(GameObject):
     def __init__(self, image_path, x, y):
-        super().__init__(image_path, x, y)  # Initialize background
+        super().__init__(image_path, x, y)
 
 class Barrier(GameObject):
     def __init__(self, image_path, x, y):
-        super().__init__(image_path, x, y)  # Initialize barrier
+        super().__init__(image_path, x, y)
         self.scale_by(5)
 
 class UI:
     iteration_num = 0
-    horses = []  # List of child objects
-    horizontal_offset = 25  # Horizontal spacing between marks
-    vertical_offset = -25  # Vertical spacing between marks
-    mark_size = 25  # Size of the marks
+    horses = []
+    horizontal_offset = 25
+    vertical_offset = -25
+    mark_size = 25
+
     def __init__(self, hud_image_path, x=0, y=HEIGHT):
-        self.horses = []  # Initialize children list
+        self.horses = []
         self.hud_image = pygame.image.load(hud_image_path)
-        self.hud_rect = self.hud_image.get_rect(topleft=(x,y))
+        self.hud_rect = self.hud_image.get_rect(topleft=(x, y))
+
     def add_horses(self, children):
-        new_horses = [child for child in children if child not in self.horses]  # Add new children
+        new_horses = [child for child in children if child not in self.horses]
         self.horses.extend(new_horses)
 
     def draw_marks(self, screen):
         active_marks = [horse for horse in self.horses if not horse.stopped]
         unactive_marks = [horse for horse in self.horses if horse.stopped]
-    
-        width = 10  # Number of marks per row
-    
-        # Отрисовка активных меток
-        xa = 0  # Horizontal position for active marks
-        ya = HEIGHT + HUD_HEIGHT - self.mark_size  # Vertical position for active marks
-    
+        width = 10
+        xa = 0
+        ya = HEIGHT + HUD_HEIGHT - self.mark_size
         for i, horse in enumerate(active_marks):
             pygame.draw.rect(screen, horse.color, (xa, ya, self.mark_size, self.mark_size))
-            xa += self.horizontal_offset  # Move to the next position
-    
-            # Move to the next row if the row is full
-            if (i + 1) % width == 0:  # Check if the next mark would be on a new row
+            xa += self.horizontal_offset
+            if (i + 1) % width == 0:
                 ya += self.vertical_offset
-                xa = 0  # Reset horizontal position for the new row
-    
-        # Отрисовка неактивных меток
-        xu = WIDTH - self.mark_size  # Horizontal position for inactive marks
-        yu = HEIGHT + HUD_HEIGHT - self.mark_size  # Vertical position for inactive marks
-    
+                xa = 0
+        xu = WIDTH - self.mark_size
+        yu = HEIGHT + HUD_HEIGHT - self.mark_size
         for i, horse in enumerate(unactive_marks):
             pygame.draw.rect(screen, horse.color, (xu, yu, self.mark_size, self.mark_size))
-            xu -= self.horizontal_offset  # Move to the next position
-    
-            # Move to the next row if the row is full
-            if (i + 1) % width == 0:  # Check if the next mark would be on a new row
+            xu -= self.horizontal_offset
+            if (i + 1) % width == 0:
                 yu += self.vertical_offset
-                xu = WIDTH - self.mark_size # Reset horizontal position for the new row
+                xu = WIDTH - self.mark_size
 
     def draw(self, surface):
         surface.blit(self.hud_image, self.hud_rect)
 
-        
-
-
 class Spawner:
-    active = True  # Whether the spawner is active
-    delay = 500  # Number of ticks between spawns
-    tick_counter = 0  # Counter for ticks
+    active = True
+    delay = 500
+    tick_counter = 0
 
     def __init__(self, barrier_image_path, delay):
-        self.barrier_image_path = barrier_image_path  # Path to the barrier image
+        self.barrier_image_path = barrier_image_path
         self.delay = delay
 
     def handle(self):
         if self.active:
-            self.tick_counter += 1  # Increment tick counter
-            if self.tick_counter >= self.delay:  # Check if it's time to spawn
+            self.tick_counter += 1
+            if self.tick_counter >= self.delay:
                 self.spawn()
-                self.tick_counter = 0  # Reset tick counter
+                self.tick_counter = 0
 
     def spawn(self):
-
-        random_y = random.randint(0, HEIGHT - 100, )  # Random Y position for the barrier
-        new_barrier = Barrier(self.barrier_image_path, WIDTH, random_y)  # Create a new barrier
+        random_y = random.randint(0, HEIGHT - 100)
+        new_barrier = Barrier(self.barrier_image_path, WIDTH, random_y)
         return new_barrier

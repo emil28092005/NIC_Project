@@ -3,3 +3,6 @@
 2. Install necessary libraries using `pip install -r requirements.txt`
 3. Edit parametres in `main.py` (Optionally)
 4. Run simulation using `py main.py` or `python3 main.py`
+
+## Note
+You can see the generated fitness statistics plot in fitness_plot.png after closing the game.
