@@ -29,12 +29,15 @@ class GeneticAlgorithm:
         print(self.device)
         self.initialize_population()
 
+    # create random individual
     def create_ind(self):
         return NeuralNetwork(self.inputSize).to(self.device)
 
+    # create random population
     def initialize_population(self):
         self.population = [self.create_ind() for _ in range(self.populationSize)]
     
+    # perform crossofer operation over 2 parents
     def crossover(self, parent1: NeuralNetwork, parent2: NeuralNetwork):
         child1 = self.create_ind()
         child2 = self.create_ind()
@@ -55,22 +58,28 @@ class GeneticAlgorithm:
                 param.data += torch.randn_like(param.data) * 0.1
         return model
 
+    # learn using given fitness for all neural networks
     def learn(self, fitness: list):
         sortedFitnessArg = np.argsort(fitness)[::-1]
         self.fitnessBest.append(fitness[sortedFitnessArg[0]])
+        # print best fitness for this population
         print(self.fitnessBest[-1])
         self.population = [self.population[x] for x in sortedFitnessArg]
         numBest = int(self.populationSize * self.percentageBest)
+        # left only best individuals
         self.population = self.population[:numBest]
+        # perform crossover
         while len(self.population) < self.populationSize - self.populationSize * self.percentageNew:
             parent1, parent2 = np.random.choice(self.population), np.random.choice(self.population)
             child1, child2 = self.crossover(parent1, parent2)
             child1 = self.mutate(child1)
             child2 = self.mutate(child2)
             self.population.extend([child1, child2])
+        # add new individuals
         while len(self.population) < self.populationSize: self.population.append(self.create_ind())
         while len(self.population) > self.populationSize: self.population.pop()
     
+    # return predicted direction for desired horse
     def predict(self, data: list, i):
         data = torch.tensor(data, requires_grad=False).float().to(self.device)
         return self.population[i](data)
