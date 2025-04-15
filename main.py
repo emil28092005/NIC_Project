@@ -29,6 +29,7 @@ font = pygame.font.SysFont("Arial", 36)
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+TEXT_COLOUR = (10, 20, 200)
 
 UI = UI("images/HUD.png")
 gameobjects = []
@@ -44,7 +45,7 @@ def init_game():
     global gameobjects, horses, barriers, upper_bound_rect, lower_bound_rect, spawner, last_barrier, BARRIER_SPEED
     # Initialize background and game objects for a new iteration
     #random.seed(BARRIER_SEED) #SET SEED
-    grass = Background("images/Grass.jpg", 0, 0)
+    grass = Background("images/Grass.png", 0, 0)
     grass.set_size(WIDTH, HEIGHT)
 
     gameobjects = [grass]
@@ -170,15 +171,15 @@ while True:
     UI.draw_marks(screen)
 
     # Display iteration and fitness info
-    iteration_num_txt = font.render(f"Iteration: {current_iteration}", True, BLACK)
+    iteration_num_txt = font.render(f"Iteration: {current_iteration}", True, TEXT_COLOUR)
     current_fitness_txt = font.render(
-        f"Current Fitness: {current_fitness}", True, BLACK)
+        f"Current Fitness: {current_fitness}", True, TEXT_COLOUR)
     best_fitness_txt = font.render(
-        f"Best Fitness: {best_fitnesses[-1] if best_fitnesses else 0}", True, BLACK)
+        f"Best Fitness: {best_fitnesses[-1] if best_fitnesses else 0}", True, TEXT_COLOUR)
 
-    screen.blit(iteration_num_txt, (WIDTH / 2 - 90, HEIGHT + HUD_HEIGHT - 120))
-    screen.blit(best_fitness_txt, (WIDTH / 2 - 120, HEIGHT + HUD_HEIGHT - 80))
-    screen.blit(current_fitness_txt, (WIDTH / 2 - 140, HEIGHT + HUD_HEIGHT - 40))
+    screen.blit(iteration_num_txt, (WIDTH / 2 - 90, HEIGHT + HUD_HEIGHT - 100))
+    screen.blit(best_fitness_txt, (10, 5))
+    screen.blit(current_fitness_txt, (10, 40))
 
     pygame.display.flip()
     pygame.time.Clock().tick(FRAME_RATE)
