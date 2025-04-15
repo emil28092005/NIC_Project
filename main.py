@@ -7,7 +7,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import random
 
-POPULATION_SIZE = 50 # SET TO 500 IF YOU HAVE A GOOD PC
+POPULATION_SIZE = 50  # Number of horses in population
 MUTATION_RATE = 0.5
 POPULATION_NEW = 0.1
 POPULATION_BEST = 0.3
@@ -42,6 +42,7 @@ last_barrier = None
 
 def init_game():
     global gameobjects, horses, barriers, upper_bound_rect, lower_bound_rect, spawner, last_barrier, BARRIER_SPEED
+    # Initialize background and game objects for a new iteration
     #random.seed(BARRIER_SEED) #SET SEED
     grass = Background("images/Grass.jpg", 0, 0)
     grass.set_size(WIDTH, HEIGHT)
@@ -49,6 +50,7 @@ def init_game():
     gameobjects = [grass]
     barriers = []
 
+    # Reset horses to starting position and state
     for horse in horses:
         horse.set_position(50, HEIGHT / 2)
         horse.stopped = False
@@ -64,6 +66,7 @@ def init_game():
     gameobjects.extend(horses)
     gameobjects.extend(barriers)
 
+    # Define upper and lower bounds for horse movement
     upper_bound_rect = pygame.Rect(0, 0, WIDTH, -10)
     lower_bound_rect = pygame.Rect(0, HEIGHT, WIDTH, 10)
 
@@ -73,6 +76,7 @@ def init_game():
 
 
 def get_features(horse: Horse):
+    # Extract normalized features for neural network input
     features = [last_barrier.rect.topleft[0], last_barrier.rect.topleft[1],
                 last_barrier.rect.bottomright[0], last_barrier.rect.bottomright[1],
                 horse.rect.topleft[0], horse.rect.topleft[1],
@@ -92,6 +96,7 @@ genecticAlg = GeneticAlgorithm(POPULATION_SIZE, MUTATION_RATE, POPULATION_BEST, 
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            # Save fitness plot on exit
             plt.plot(running_fitnesses)
             plt.xlabel("Iteration")
             plt.ylabel("Current Fitness")
@@ -106,6 +111,7 @@ while True:
         if not horse.stopped:
             data = get_features(horse)
             res = genecticAlg.predict(data, i)
+            # Control horse movement based on neural network output
             if res == 0:
                 horse.up()
             elif res == 1:
@@ -113,6 +119,7 @@ while True:
             else:
                 horse.stay()
         else:
+            # Move stopped horses left with barriers
             horse.move(-BARRIER_SPEED, 0)
 
         horse.apply_vacceleration()
@@ -121,6 +128,7 @@ while True:
 
     spawner.handle()
     if spawner.tick_counter == 0:
+        # Spawn new barrier periodically
         new_barrier = spawner.spawn()
         barriers.append(new_barrier)
         gameobjects.append(new_barrier)
@@ -133,6 +141,7 @@ while True:
         horse.update_animation()
 
         if not horse.stopped:
+            # Check collisions with barriers and bounds
             for barrier in barriers:
                 if horse.rect.colliderect(barrier.rect):
                     horse.stop()
@@ -146,8 +155,8 @@ while True:
     current_fitnesses = [horse.fitness for horse in horses]
     current_fitness = max(current_fitnesses)
     
-
     if all(horse.stopped for horse in horses):
+        # All horses stopped: evolve population and start new iteration
         UI.iteration_num += 1
         genecticAlg.learn([x.fitness for x in horses])
 
@@ -160,6 +169,7 @@ while True:
     UI.draw(screen)
     UI.draw_marks(screen)
 
+    # Display iteration and fitness info
     iteration_num_txt = font.render(f"Iteration: {current_iteration}", True, BLACK)
     current_fitness_txt = font.render(
         f"Current Fitness: {current_fitness}", True, BLACK)
